@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 });
 
 
-app.post('/api/users', (req, res) => {
+app.route('/api/users').post((req, res) => {
   const username = req.body.username
   userModel.findOne({username: username}, async (err, data) => {
     if (err) {
@@ -35,7 +35,7 @@ app.post('/api/users', (req, res) => {
     else{
       if (data == null){
         let newUser = await userModel.create({username: username})
-        res.send(newUser)
+        res.send({username: newUser.username, _id: newUser._id})
       }
       else{
         res.status(400)
@@ -44,8 +44,16 @@ app.post('/api/users', (req, res) => {
     }
   })
 
+}).get((req, res) =>{
+  userModel.find({}, (err, data) => {
+    res.send(data)
+  })
 })
 
+
+app.post("/api/users/:_id/exercises", (req, res) => {
+  
+})
 
 
 
