@@ -61,7 +61,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
   console.log(req.body);
   let id = req.params._id
 
-  if (!req,params.date){
+  if (!req.body.date){
     req.params.date = new Date().toJSON().slice(0,10).replace(/-/g,'/');
   }
 
