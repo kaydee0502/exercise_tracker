@@ -16,7 +16,11 @@ const { Schema } = mongoose
 const userSchema = new Schema({
   username: {type: String, required: true},
   count: {type: Number, default: 0},
-  log: {type: Array}
+  log: [{
+    description: String,
+    duration: Number,
+    date: Date
+  }]
 })
 
 let userModel = mongoose.model("userModel", userSchema)
@@ -57,7 +61,10 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
   console.log(req.body);
   let id = req.params._id
 
-  if (!req.body.date)
+  if (!req,params.date){
+    req.params.date = new Date().toJSON().slice(0,10).replace(/-/g,'/');
+  }
+
   userModel.findByIdAndUpdate(id,{ $inc: { count: 1 }, $push: { log: req.body }}, { new: true }, (err, data) => {
     console.log("LOLPAWDKAW");
     res.send(data)
