@@ -14,7 +14,9 @@ const { Schema } = mongoose
 
 
 const userSchema = new Schema({
-  username: {type: String, required: true}
+  username: {type: String, required: true},
+  count: {type: Number, default: 0},
+  log: {type: Array}
 })
 
 let userModel = mongoose.model("userModel", userSchema)
@@ -51,8 +53,18 @@ app.route('/api/users').post((req, res) => {
 })
 
 
-app.post("/api/users/:_id/exercises", (req, res) => {
-  
+app.post("/api/users/:_id/exercises", async (req, res) => {
+  console.log(req.body);
+  let id = req.params._id
+
+  if (!req.body.date)
+  userModel.findByIdAndUpdate(id,{ $inc: { count: 1 }, $push: { log: req.body }}, { new: true }, (err, data) => {
+    console.log("LOLPAWDKAW");
+    res.send(data)
+
+  })
+
+
 })
 
 
