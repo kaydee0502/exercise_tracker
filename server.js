@@ -62,12 +62,18 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
   let id = req.params._id
 
   if (!req.body.date){
-    req.params.date = new Date().toJSON().slice(0,10).replace(/-/g,'/');
+    req.body.date = new Date().toJSON().slice(0,10).replace(/-/g,'/');
   }
 
   userModel.findByIdAndUpdate(id,{ $inc: { count: 1 }, $push: { log: req.body }}, { new: true }, (err, data) => {
     console.log("LOLPAWDKAW");
-    res.send(data)
+    res.send({
+      _id: id,
+      username: data.username,
+      date: req.body.date,
+      description: req.body.description,
+      duration: req.body.duration,
+    })
 
   })
 
