@@ -40,11 +40,11 @@ app.route('/api/users').post((req, res) => {
     }
     else{
       if (data == null){
-        let newUser = await userModel.create({username: username})
+        var newUser = await userModel.create({username: username})
         
       }
       else{
-        let newUser = data;
+        var newUser = data;
       }
       res.send({username: newUser.username, _id: newUser._id})
  
@@ -82,12 +82,27 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
 })
 
 
-app.get("/api/users/:_id/logs", (req, res) => {
-  let id = req.params._id
+app.get("/api/users/:_id/logs", async (req, res) => {
 
-  userModel.findById(id, (err, data) => {
-    res.jsonp(data)
+  let id = req.params._id
+  let to = req.query.to
+  console.log(req.query.from, req.query.to)
+  if (to == undefined){
+    to = new Date;
+  }
+  let from = req.query.from
+  if (from == undefined){
+    from = new Date(null)
+  }
+  console.log(id,from,to);
+  let limit = req.query.limit
+
+  userModel.find({ '_id': id}, (err, data) => {
+    data.log.map((e) => {
+      
+    })
   })
+
 })
 
 
