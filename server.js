@@ -41,12 +41,13 @@ app.route('/api/users').post((req, res) => {
     else{
       if (data == null){
         let newUser = await userModel.create({username: username})
-        res.send({username: newUser.username, _id: newUser._id})
+        
       }
       else{
-        res.status(400)
-        res.send("Username already taken.")
+        let newUser = data;
       }
+      res.send({username: newUser.username, _id: newUser._id})
+ 
     }
   })
 
@@ -78,6 +79,15 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
   })
 
 
+})
+
+
+app.get("/api/users/:_id/logs", (req, res) => {
+  let id = req.params._id
+
+  userModel.findById(id, (err, data) => {
+    res.jsonp(data)
+  })
 })
 
 
