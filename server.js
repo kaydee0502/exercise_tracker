@@ -67,7 +67,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
   }
 
   userModel.findByIdAndUpdate(id,{ $inc: { count: 1 }, $push: { log: req.body }}, { new: true }, (err, data) => {
-    console.log("LOLPAWDKAW");
+    console.log(JSON.stringify(data));
     res.send({
       _id: id,
       username: data.username,
@@ -98,9 +98,21 @@ app.get("/api/users/:_id/logs", async (req, res) => {
   let limit = req.query.limit
 
   userModel.find({ '_id': id}, (err, data) => {
-    data.log.map((e) => {
-      
+    console.log(data);
+    if (err) { res.send(err); return; }
+    data[0].log.map((e) => {
+      e.date = new Date(e.date)
     })
+
+    console.log(data[0].log);
+    let dataSUP = data[0].log.filter((e) => {
+      debugger
+      return e.date > from
+    })
+    console.log(dataSUP);
+
+    res.send(dataSUP)
+
   })
 
 })
