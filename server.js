@@ -91,36 +91,78 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
 })
 
 
-app.get("/api/users/:_id/logs", async (req, res) => {
+// app.get("/api/users/:_id/logs", async (req, res) => {
 
-  let id = req.params._id
-  let to = req.query.to
+//   let id = req.params._id
+//   let to = req.query.to
 
-  if (to == undefined){
-    to = new Date;
-  }
-  let from = req.query.from
-  if (from == undefined){
-    from = new Date(null)
-  }
+//   if (to == undefined){
+//     to = new Date;
+//   }
+//   let from = req.query.from
+//   if (from == undefined){
+//     from = new Date(null)
+//   }
 
-  let limit = req.query.limit
+//   let limit = req.query.limit
 
-  userModel.findOne({ '_id': id}, (err, data) => {
-    console.log(data);
-    if (err) { res.send(err); return; }
+//   userModel.findOne({ '_id': id}, (err, data) => {
+//     console.log(data);
+//     if (err) { res.send(err); return; }
     
-    data.log = data.log.filter((e) => {
-      console.log(from, e.date, to)
-      return new Date(e.date) > from
-    })
-    debugger;
+//     data.log = data.log.filter((e) => {
+//       console.log(from, e.date, to)
+//       return new Date(e.date) > from
+//     })
+//     debugger;
 
-    res.send(data)
+//     res.send(data)
+//   })
+
+// })
+
+app.get("/api/users/:_id/logs", (request, response) => {
+  
+  userModel.findById(request.params._id, (error, result) => {
+    if(!error){
+      let responseObject = result
+      
+      if(request.query.from || request.query.to){
+        
+        let fromDate = new Date(0)
+        let toDate = new Date()
+        
+        if(request.query.from){
+          fromDate = new Date(request.query.from)
+        }
+        
+        if(request.query.to){
+          toDate = new Date(request.query.to)
+        }
+        
+        fromDate = fromDate.getTime()
+        toDate = toDate.getTime()
+        
+        responseObject.log = responseObject.log.filter((session) => {
+          let sessionDate = new Date(session.date).getTime()
+          console.log(fromDate, sessionDate, toDate)
+          return sessionDate >= fromDate && sessionDate <= toDate
+          
+        })
+        
+      }
+      
+      if(request.query.limit){
+        responseObject.log = responseObject.log.slice(0, request.query.limit)
+      }
+      
+      responseObject = responseObject.toJSON()
+      responseObject['count'] = result.log.length
+      response.json(responseObject)
+    }
   })
-
+  
 })
-
 
 
 const listener = app.listen(process.env.PORT || 3000, () => {
