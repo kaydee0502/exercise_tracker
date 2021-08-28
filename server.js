@@ -13,17 +13,20 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 const { Schema } = mongoose
 
 
+const exerciseSchema = new Schema({
+  description: {type: String, required: true},
+  duration: {type: Number, required: true},
+  date: Date
+})
+
 const userSchema = new Schema({
   username: {type: String, required: true},
   count: {type: Number, default: 0},
-  log: [{
-    description: String,
-    duration: Number,
-    date: Date
-  }]
+  log: [exerciseSchema]
 })
 
 let userModel = mongoose.model("userModel", userSchema)
+let exerciseModel = mongoose.model("exerciseModel", exerciseSchema)
 
 app.use(cors())
 app.use(express.static('public'))
@@ -66,6 +69,12 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
     req.body.date = new Date().toJSON().slice(0,10).replace(/-/g,'/');
   }
 
+  let newExer = exerciseModel.create({
+    description: req.body.description,
+    duration: req.body.duration,
+    date: req.body.date,
+    
+  })
   userModel.findByIdAndUpdate(id,{ $inc: { count: 1 }, $push: { log: req.body }}, { new: true }, (err, data) => {
     console.log(JSON.stringify(data));
     res.send({
@@ -86,7 +95,7 @@ app.get("/api/users/:_id/logs", async (req, res) => {
 
   let id = req.params._id
   let to = req.query.to
-  console.log(req.query.from, req.query.to)
+
   if (to == undefined){
     to = new Date;
   }
@@ -94,25 +103,20 @@ app.get("/api/users/:_id/logs", async (req, res) => {
   if (from == undefined){
     from = new Date(null)
   }
-  console.log(id,from,to);
+
   let limit = req.query.limit
 
-  userModel.find({ '_id': id}, (err, data) => {
+  userModel.findOne({ '_id': id}, (err, data) => {
     console.log(data);
     if (err) { res.send(err); return; }
-    data[0].log.map((e) => {
-      e.date = new Date(e.date)
+    
+    data.log = data.log.filter((e) => {
+      console.log(from, e.date, to)
+      return new Date(e.date) > from
     })
+    debugger;
 
-    console.log(data[0].log);
-    let dataSUP = data[0].log.filter((e) => {
-      debugger
-      return e.date > from
-    })
-    console.log(dataSUP);
-
-    res.send(dataSUP)
-
+    res.send(data)
   })
 
 })
