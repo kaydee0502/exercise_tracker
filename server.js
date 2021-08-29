@@ -56,6 +56,10 @@ app.route('/api/users').post((req, res) => {
 
 }).get((req, res) =>{
   userModel.find({}, (err, data) => {
+
+    data = data.map((e) => {
+      return { "_id": e._id, "username": e.username }
+    })
     res.send(data)
   })
 })
