@@ -165,6 +165,81 @@ const t7 = async (getUserInput) => {
     }
   };
   
+const t8 = async (getUserInput) => {
+    const url = 'https://exercisetrker.herokuapp.com';
+    const res = await fetch(url + '/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `username=fcc_test_${Date.now()}`.substr(0, 29)
+    });
+    if (res.ok) {
+      const { _id, username } = await res.json();
+      const expected = {
+        username,
+        description: 'test',
+        duration: 60,
+        _id,
+        date: new Date().toDateString()
+      };
+      const addRes = await fetch(url + `/api/users/${_id}/exercises`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `description=${expected.description}&duration=${expected.duration}`
+      });
+      if (addRes.ok) {
+        const logRes = await fetch(url + `/api/users/${_id}/logs`);
+      assert.isTrue(logRes.ok);
+      if(!logRes.ok) {
+        throw new Error(`${logRes.status} ${logRes.statusText}`)
+      };
+      console.log("t8 ok!");
+      } else {
+        throw new Error(`${addRes.status} ${addRes.statusText}`);
+      }
+    } else {
+      throw new Error(`${res.status} ${res.statusText}`);
+    }
+  };
+  
+
+const t9 = async (getUserInput) => {
+    const url = 'https://exercisetrker.herokuapp.com';
+    const res = await fetch(url + '/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `username=fcc_test_${Date.now()}`.substr(0, 29)
+    });
+    if (res.ok) {
+      const { _id, username } = await res.json();
+      const expected = {
+        username,
+        description: 'test',
+        duration: 60,
+        _id,
+        date: new Date().toDateString()
+      };
+      const addRes = await fetch(url + `/api/users/${_id}/exercises`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `description=${expected.description}&duration=${expected.duration}`
+      });
+      if (addRes.ok) {
+        const logRes = await fetch(url + `/api/users/${_id}/logs`);
+        if (logRes.ok) {
+          const { count } = await logRes.json();
+          assert(count);
+          console.log("t9 ok!");
+        } else {
+          throw new Error(`${logRes.status} ${logRes.statusText}`);
+        }
+      } else {
+        throw new Error(`${addRes.status} ${addRes.statusText}`);
+      }
+    } else {
+      throw new Error(`${res.status} ${res.statusText}`);
+    }
+  };
+  
 
 t1();
 t2();
@@ -173,3 +248,5 @@ t4();
 t5();
 t6();
 t7();
+t8();
+t9();
