@@ -151,6 +151,7 @@ const t7 = async (getUserInput) => {
       });
       if (addRes.ok) {
         const actual = await addRes.json();
+        console.log(expected, actual);
         assert.deepEqual(actual, expected);
         assert.isString(actual.description);
         assert.isNumber(actual.duration);

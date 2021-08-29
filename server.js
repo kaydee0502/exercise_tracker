@@ -79,7 +79,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
 
   let newExer = exerciseModel.create({
     description: req.body.description,
-    duration: req.body.duration,
+    duration: parseInt(req.body.duration),
     date: req.body.date,
     
   })
@@ -90,7 +90,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
       username: data.username,
       date: req.body.date,
       description: req.body.description,
-      duration: req.body.duration,
+      duration: parseInt(req.body.duration),
     })
 
   })
