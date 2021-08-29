@@ -70,7 +70,11 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
   let id = req.params._id
 
   if (!req.body.date){
-    req.body.date = new Date().toJSON().slice(0,10).replace(/-/g,'/');
+    req.body.date = new Date().toDateString();
+  }
+  else{
+    req.body.date = new Date(req.body.date).toDateString();
+    
   }
 
   let newExer = exerciseModel.create({
